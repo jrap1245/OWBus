@@ -11,8 +11,9 @@
 #define IMPLEMENT_BITFIELD_TEST
 #endif
 #include <OWBus/DS2406.h>
+#include <OWBus/DS2413.h>
 
-#define ONE_WIRE_BUS 5			// Where 1-wire bus is connected to (GPIO-5)
+#define ONE_WIRE_BUS 14			// Where 1-wire bus is connected to (GPIO-5)
 OneWire oneWire(ONE_WIRE_BUS);	// Initialize oneWire library
 OWBus bus(&oneWire);
 
@@ -43,6 +44,16 @@ void loop() {
 		else {
 			switch( addr.getFamilyCode() ){
 			case DS2406::FAMILY_CODE: {
+					DS2406 probe( bus, addr );
+					Serial.println( probe.getFamily() );
+#			ifdef IMPLEMENT_BITFIELD_TEST
+					Serial.println( probe.checkArchitecture() ? "\tArch ok":"Bad bits ordering");
+#			endif
+					Serial.println( probe.hasPIOB() ? "\tBoth PIO.A & PIO.B" : "\tonly PIO.A" );
+					Serial.println( probe.isParasitePowered() ? "\tParasite" : "\tExternal" );
+				}
+				break;
+			case DS2413::FAMILY_CODE: {
 					DS2406 probe( bus, addr );
 					Serial.println( probe.getFamily() );
 #			ifdef IMPLEMENT_BITFIELD_TEST
